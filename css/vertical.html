@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>垂直</title>
+  <style>
+    .outter1 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .inner1 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+    }
+
+    .outter2 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .inner2 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      display: inline-block;
+    }
+
+    .outter3 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      overflow: hidden;
+    }
+    .inner3 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      margin: 50% auto;
+      transform: translateY(-50%);
+    }
+
+    .outter4 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      text-align: center;
+      line-height: 200px;
+    }
+    .inner4 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .outter5 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      position: relative;
+    }
+    .inner5 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -50px;
+      margin-top: -50px;
+    }
+
+    .outter6 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      position: relative;
+    }
+    .inner6 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+    }
+
+    .outter7 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      position: relative;
+    }
+    .inner7 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .outter8 {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      display: grid;
+    }
+    .inner8 {
+      width: 100px;
+      height: 100px;
+      background-color: lightblue;
+      align-self: center;
+      justify-self: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>flex</h2>
+  <div class="outter1">
+    <div class="inner1"></div>
+  </div>
+  <h2>table-cell</h2>
+  <div class="outter2">
+    <div class="inner2"></div>
+  </div>
+  <h2>maigin, transform</h2>
+  <div class="outter3">
+    <div class="inner3"></div>
+  </div>
+  <h2>line-height, vertical-align</h2>
+  <div class="outter4">
+    <div class="inner4"></div>
+  </div>
+  <h2>absolute, -margin</h2>
+  <div class="outter5">
+    <div class="inner5"></div>
+  </div>
+  <h2>absolute, margin: auto</h2>
+  <div class="outter6">
+    <div class="inner6"></div>
+  </div>
+  <h2>absolute, transform</h2>
+  <div class="outter7">
+    <div class="inner7"></div>
+  </div>
+  <h2>grid</h2>
+  <div class="outter8">
+    <div class="inner8"></div>
+  </div>
+</body>
+</html>

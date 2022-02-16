@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+  <div id="app">
+    <h1>{{ s }}</h1>
+    <el-form ref="form" :model="formData" label-width="80px">
+      <el-form-item label="单位名称">
+        <el-input v-model="formData.dwmc" />
+      </el-form-item>
+    </el-form>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+new Vue({
+  el: "#app",
+  data: {
+    s: "hello world!!!",
+    formData: {
+      dwmc: "单位名称 -- wei"
+    }
+  }
+})
+</script>
+</html>
