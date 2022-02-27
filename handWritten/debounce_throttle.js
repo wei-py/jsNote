@@ -14,16 +14,30 @@ function debounce(fn, wait) {
   }
 }
 
-// 节流 多点化一
+// 节流 多点不理
 function throttle (fn, wait) {
-  var preTime = Date.now();
+  var startTime = Date.now();
   return function() {
     const context = this;
     const args = arguments;
-    var nowTime = Date.now();
-    if (nowTime - preTime >= wait) {
-      preTime = Date.now();
-      return fn.apply(context, args)
+    let nowTime = Date.now();
+    let remaining = wait - (nowTime - startTime)
+    clearTimeout(timer)
+    if (remaining <= 0) {
+      fn.apply(context, args)
+      startTime = Date.now();
+    } else {
+      timer = setTimeout(fn, remaining);
     }
   }
 }
+
+
+// 防抖
+// 提交表单
+// resize
+// input 事件
+
+// 节流
+// 验证码
+// scroll
