@@ -27,7 +27,7 @@ function throttle (fn, wait) {
       fn.apply(context, args)
       startTime = Date.now();
     } else {
-      timer = setTimeout(fn, remaining);
+      timer = setTimeout(fn, remaining); // 刷新
     }
   }
 }

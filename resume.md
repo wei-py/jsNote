@@ -6,3 +6,14 @@
 ### 开源作品
 ### 工作经历
 ### 教育经历
+
+
+
+
+前端: HTML CSS JavaScript TypeScript \
+框架: Vue \
+工具: Scss Webpack \
+版本管理: Git \
+
+<!-- 浏览器兼容 -->
+

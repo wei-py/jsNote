@@ -1,3 +1,5 @@
+### 作用
+* 源代码编译（构建、打包）成最终代码
 ### 小试牛刀
 ```js
 const path = require("path");
@@ -17,7 +19,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: "./src/index.js",
   output: {
-    filename: "bundle.js",`
+    filename: "bundle.js",
     path: path.resolve(__dirname, "./dist"),
     clean: true,
     assetModuleFilename: "images/[contenthash][ext]",
@@ -210,3 +212,159 @@ getComponent().then((element) => {
   document.body.appendChild(element)
 })
 ```
+### 懒加载 预获取
+```js
+const button = document.createElement("button");
+button.textContent = "点击执行加法运算";
+button.addEventListener("click", () = {
+  import(/* webpackChunkName: 'math', webapckPrefetch: true */ "math.js").then(({ add }) => {
+    console.log(add(4, 5));
+  })
+})
+document.body.appendChild(button);
+```
+### 输出文件的文件名
+```js
+output: {
+  filename: "scripts/[name][contenthash].js" // 将 js 文件放在一个📂
+}
+```
+### 缓存第三方库
+```js
+optimization: {
+  splitChunks: {
+    cacheGroups: {
+      vendor: {
+        test: /[\\/]node_modules[\\/]/,
+        name: "vendors",
+        chunks: "all",
+      }
+    }
+  }
+}
+```
+### 拆分开发环境和生产环境的配置
+```js
+output: {
+  publicPath: "http://localhost:8080/" // 📢 最后的斜线
+}
+// 环境变量
+// npx webpack --env production --env goal=local
+module.exports = (env) => {
+  return {
+    mode: env.production ? "production" : "development"
+  }
+}
+// 代码压缩 yarn add terser-webpack-plugin -D
+const TerserPlugin = require("terser-webpack-plugin");
+optimization: {
+  minimizer: [
+    new TerserPlugin(),
+  ]
+}
+```
+### 拆分配置文件 新建文件夹
+* 开发环境下
+  * ⭕️ entry
+  * ❌ output 中 filename [contenthash] publicPath
+  * ⭕️ mode: "development"
+  * ⭕️ devtool: "inline-source-map"
+  * ⭕️ devServer
+  * ❌ minimizer
+  * npx webpack -c ./config/webpack.config.dev.js
+  * ⭕️ path: path.resolve(__dirname, "../dist")
+* 生产环境下
+  * ⭕️ entry
+  * ⭕️ filename [contenthash] publicPath
+  * ⭕️ mode: "production"
+  * ❌ devtool
+  * ❌ devServer
+* config📂
+  * webpack.config.dev.js
+  * webpack.config.prod.js
+### npm 脚本
+* package.json
+```js
+{
+  "script": {
+    "start": "npx webpack serve -c ./config/webpack.config.dev",
+    "build": "npx webpack -c ./config/webpack.config.prod.js"
+  }
+}
+performance: {
+  hints: false
+}
+```
+### 提取公共配置
+#### webpack.config.common.js
+* entry
+  * index
+  * another
+* output
+  * ❌ filename
+  * ❌ publicPath
+  * path
+  * clean
+  * assetModuleFilename
+* plugins
+* module
+* optimization
+  * ❌ minimizer
+  * splitChunks
+#### webpack.config.dev.js
+* output
+  * filename
+* mode
+* devtool
+* devServer
+#### webpack.config.prod.js
+* output
+  * filename
+  * publicPath
+* mode
+* optimization
+  * minimizer
+* performance
+### 合并配置文件
+yarn add webpack-merge -D \
+webpack.config.js
+```js
+const { merge } = require("webpack-merge");
+const commonConfig = require("./webpack.config.common")
+const productionfig = require("./webpack.config.prod")
+const developmentfig = require("./webpack.config.dev")
+module.exports = (env) => {
+  switch (true) {
+    case env.development:
+      return merge(commonConfig, developmentConfig);
+    case env.production:
+      return merge(commonConfig, productionConfig);
+    default:
+      return new Error("No matching configuration was found")
+  }
+}
+// package.json
+{
+  "script": {
+    "start": "npx webpack serve -c ./config/webpack.config.js --env development",
+    "build": "npx webpack -c ./config/webpack.config.js --env production"
+  }
+}
+```
+### devServer
+```js
+devServer: {
+  static: path.resolve(__dirname,  "./dist"),
+  compress: false,
+  port: 3000,
+  headers: {
+    "X-Access-Token": "abc123"
+  },
+  proxy: {
+    "/api": "http://localhost:9000"
+  },
+  https: true,
+}
+```
+
+> entry output mode devtool plugins devServer module optimization

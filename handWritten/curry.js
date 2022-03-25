@@ -16,7 +16,7 @@ function curry5(fn, args) {
     if (subArgs.length >= length) { // 参数不够
       return fn.apply(this, subArgs);
     } else {
-      return curry.call(this, fn, subArgs);
+      return curry5.call(this, fn, subArgs);
     }
   }
 }

@@ -1,25 +1,65 @@
-function deepClone(obj, hash = new WeakMap(), Type = [Map, Set, Date, RegExp, WeakMap, WeakSet]) {
-  if (hash.has(obj)) return hash.get(obj);
-  if (Type.includes(obj)) return new obj.contructor(obj);
-  if (obj === null) return obj;
-  if (typeof obj === 'function') return obj.bind();
-  if (typeof obj !== "object") return obj; // 基本数据类型
-  // let cloneObj = Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
-  let cloneObj = new obj.constructor();
-  let Symkeys = Object.getOwnPropertySymbols(obj);
-  if (Symkeys.length != 0) {
-    for (const symkey of Symkeys) {
-      cloneObj[symkey] = typeof obj[symkey] === 'object' ? deepclone(obj[symkey], hash) : obj[symkey];
-    }
+function deepClone(target) {
+  const map = new WeakMap()
+  function isObject(target) {
+      return (typeof target === 'object' && target ) || typeof target === 'function'
   }
-  hash.set(obj, cloneObj);
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      cloneObj[key] = deepClone(obj[key], hash);
-    }
+
+  function clone(data) {
+      if (!isObject(data)) {
+          return data
+      }
+      if ([Date, RegExp].includes(data.constructor)) {
+          return new data.constructor(data)
+      }
+      if (typeof data === 'function') {
+          return new Function('return ' + data.toString())()
+      }
+      const exist = map.get(data)
+      if (exist) {
+          return exist
+      }
+      if (data instanceof Map) {
+          const result = new Map()
+          map.set(data, result)
+          data.forEach((val, key) => {
+              if (isObject(val)) {
+                  result.set(key, clone(val))
+              } else {
+                  result.set(key, val)
+              }
+          })
+          return result
+      }
+      if (data instanceof Set) {
+          const result = new Set()
+          map.set(data, result)
+          data.forEach(val => {
+              if (isObject(val)) {
+                  result.add(clone(val))
+              } else {
+                  result.add(val)
+              }
+          })
+          return result
+      }
+      const keys = Reflect.ownKeys(data)
+      const allDesc = Object.getOwnPropertyDescriptors(data)
+      const result = Object.create(Object.getPrototypeOf(data), allDesc)
+      map.set(data, result)
+      keys.forEach(key => {
+          const val = data[key]
+          if (isObject(val)) {
+              result[key] = clone(val)
+          } else {
+              result[key] = val
+          }
+      })
+      return result
   }
-  return cloneObj;
+
+  return clone(target)
 }
+
 
 let a = {
   name: "lk",
@@ -32,14 +72,16 @@ let a = {
   a3: 123,
   a4: NaN,
   a5: function hs() {
-    return 1
+    return 1;
   },
 };
 
-// //对象循环引用
-const sya = Symbol('a');
-a[sya] = 'a';
+const sya = Symbol("a");
+a[sya] = "a";
 a.circleRef = a;
+a.a6 = new Map([["mapKey", {'a': 123}]]);
 
 let b = deepClone(a);
-
+console.log(b);
+console.log(a);
+console.log(a.a6.get('mapKey') === b.a6.get('mapKey'));
