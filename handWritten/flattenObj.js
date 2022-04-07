@@ -29,6 +29,5 @@ const obj = {
   s
 };
 
-
 const result = flatten(obj);
 console.log(result);

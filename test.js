@@ -1,79 +1,44 @@
-const throttle = function (func, wait, options) {
-  var timeout, context, args, result;
+function isObject(obj) {
+  return (typeof obj === "object" && obj) || typeof obj === "function";
+}
 
-  // 上一次执行回调的时间戳
-  var previous = 0;
-
-  // 无传入参数时，初始化 options 为空对象
-  if (!options) options = {};
-
-  var later = function () {
-    // 当设置 { leading: false } 时
-    // 每次触发回调函数后设置 previous 为 0
-    // 不然为当前时间
-    previous = options.leading === false ? 0 : _.now();
-
-    // 防止内存泄漏，置为 null 便于后面根据 !timeout 设置新的 timeout
-    timeout = null;
-
-    // 执行函数
-    result = func.apply(context, args);
-    if (!timeout) context = args = null;
-  };
-
-  // 每次触发事件回调都执行这个函数
-  // 函数内判断是否执行 func
-  // func 才是我们业务层代码想要执行的函数
-  var throttled = function () {
-    // 记录当前时间
-    var now = _.now();
-
-    // 第一次执行时（此时 previous 为 0，之后为上一次时间戳）
-    // 并且设置了 { leading: false }（表示第一次回调不执行）
-    // 此时设置 previous 为当前值，表示刚执行过，本次就不执行了
-    if (!previous && options.leading === false) previous = now;
-
-    // 距离下次触发 func 还需要等待的时间
-    var remaining = wait - (now - previous);
-    context = this;
-    args = arguments;
-
-    // 要么是到了间隔时间了，随即触发方法（remaining <= 0）
-    // 要么是没有传入 {leading: false}，且第一次触发回调，即立即触发
-    // 此时 previous 为 0，wait - (now - previous) 也满足 <= 0
-    // 之后便会把 previous 值迅速置为 now
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-
-        // clearTimeout(timeout) 并不会把 timeout 设为 null
-        // 手动设置，便于后续判断
-        timeout = null;
-      }
-
-      // 设置 previous 为当前时间
-      previous = now;
-
-      // 执行 func 函数
-      result = func.apply(context, args);
-      if (!timeout) context = args = null;
-    } else if (!timeout && options.trailing !== false) {
-      // 最后一次需要触发的情况
-      // 如果已经存在一个定时器，则不会进入该 if 分支
-      // 如果 {trailing: false}，即最后一次不需要触发了，也不会进入这个分支
-      // 间隔 remaining milliseconds 后触发 later 方法
-      timeout = setTimeout(later, remaining);
-    }
+const map = new WeakMap();
+function deepClone(obj) {
+  if (isObject(obj)) return obj;
+  if ([Date, RegExp].includes(obj.constructor)) return new obj.constructor(obj); // 虽是复杂类型, 但是没有深层结构
+  if (typeof obj === "function")
+    return new Function("return " + obj.toString())(); // 函数新地址, 函数不复用
+  if (map.get(obj)) return obj; // 避免循环调用
+  if (obj instanceof Map) {
+    const result = new Map();
+    map.set(obj, result);
+    obj.forEach((value, key) => {
+      isObject(value)
+        ? result.set(key, deepClone(value))
+        : result.set(key, value);
+    });
     return result;
-  };
+  }
+  if (obj instanceof Set) {
+    const result = new Set();
+    map.set(obj, result);
+    obj.forEach((value) => {
+      isObject(value)
+        ? result.add(deepClone(value))
+        : result.add(value)
+    })
+    return result;
+  }
 
-  // 手动取消
-  throttled.cancel = function () {
-    clearTimeout(timeout);
-    previous = 0;
-    timeout = context = args = null;
-  };
+  const keys = Reflect.ownKeys(obj);
+  const allDesc = Object.getOwnPropertyDescriptors(obj);
+  const result = Object.create(Object.getPrototypeOf(obj), allDesc);
+  keys.forEach((key) => {
+    const value = obj[key];
+    isObject(value)
+      ? result[key] = deepClone(value)
+      : result[key] = value;
+  })
+  return result;
+}
 
-  // 执行 _.throttle 返回 throttled 函数
-  return throttled;
-};

@@ -80,9 +80,7 @@ function throttle(fn, interval, option = { leading: true, trailing: false }) {
   const _throttle = function (...args) {
     // 获取当前事件触发时的时间
     let nowTime = new Date().getTime();
-    if (lastTime === 0 && leading === false) {
-      lastTime = nowTime;
-    }
+    if (!lastTime && !leading) lastTime = nowTime;
     // 使用当前触发的时间和之前的时间间隔以及上一次开始的时间,计算出还剩多长时间需要去触发函数
     const remainTime = interval - (nowTime - lastTime);
     if (remainTime <= 0) {
